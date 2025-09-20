@@ -17,8 +17,15 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate file size (max 10MB)
-    if (file.size > 10 * 1024 * 1024) {
-      return NextResponse.json({ error: "File size too large. Max 10MB allowed." }, { status: 400 });
+    const maxSize = parseInt(process.env.MAX_FILE_SIZE || "10485760", 10);
+    if (file.size > maxSize) {
+      return NextResponse.json({ error: `File size too large. Max ${Math.round(maxSize / 1024 / 1024)}MB allowed.` }, { status: 400 });
+    }
+
+    // Validate MIME types
+    const allowedTypes = (process.env.ALLOWED_MIME_TYPES || "image/jpeg,image/jpg,image/png,image/webp").split(",");
+    if (!allowedTypes.includes(file.type)) {
+      return NextResponse.json({ error: "File type not allowed. Please upload JPG, PNG, or WebP images." }, { status: 400 });
     }
 
     const bytes = await file.arrayBuffer();
@@ -26,31 +33,41 @@ export async function POST(request: NextRequest) {
 
     // Create unique filename
     const timestamp = Date.now();
-    const filename = `selfie-${timestamp}-${file.name}`;
-    const path = join(process.cwd(), "public/uploads", filename);
+    const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+    const filename = `selfie-${timestamp}-${sanitizedName}`;
 
-    // Create uploads directory if it doesn't exist
+    // CRITICAL: Vercel serverless functions can ONLY write to /tmp directory
+    const uploadDir = process.env.UPLOAD_DIR || "/tmp";
+    const filePath = join(uploadDir, filename);
+
+    // Create uploads directory if it doesn't exist (for /tmp)
     const { mkdir } = await import("fs/promises");
-    const uploadsDir = join(process.cwd(), "public/uploads");
     try {
-      await mkdir(uploadsDir, { recursive: true });
+      await mkdir(uploadDir, { recursive: true });
     } catch {
       // Directory might already exist
     }
 
-    await writeFile(path, buffer);
+    await writeFile(filePath, buffer);
 
-    // Return the public URL for the uploaded file
-    const publicUrl = `/uploads/${filename}`;
+    // For Vercel, we need to return a data URL since files in /tmp are not publicly accessible
+    const base64Data = buffer.toString('base64');
+    const dataUrl = `data:${file.type};base64,${base64Data}`;
 
     return NextResponse.json({
       message: "File uploaded successfully",
-      url: publicUrl,
-      filename: filename
+      url: dataUrl,
+      filename: filename,
+      filePath: filePath,
+      size: file.size,
+      type: file.type
     });
 
   } catch (error) {
     console.error("Upload error:", error);
-    return NextResponse.json({ error: "Failed to upload file" }, { status: 500 });
+    return NextResponse.json({
+      error: "Failed to upload file",
+      details: error instanceof Error ? error.message : "Unknown error"
+    }, { status: 500 });
   }
 }
