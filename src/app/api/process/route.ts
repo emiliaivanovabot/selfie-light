@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
 
     // Enhanced error response with details for debugging
     let errorMessage = "Failed to process image";
-    let errorDetails: any = {};
+    let errorDetails: Record<string, unknown> = {};
 
     if (error instanceof Error) {
       errorMessage = error.message;

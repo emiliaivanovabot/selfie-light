@@ -186,16 +186,16 @@ export default function Home() {
           <div className="text-center">
             <div className="inline-block rounded-xl overflow-hidden shadow-xl mb-6">
               <Image
-                src={processedResult.images[0].url}
+                src={processedResult.image.url}
                 alt="Transformed selfie"
-                width={processedResult.images[0].width || 320}
-                height={processedResult.images[0].height || 400}
+                width={processedResult.image.width || 320}
+                height={processedResult.image.height || 400}
                 className="max-w-full h-auto"
               />
             </div>
             <div className="space-y-3">
               <a
-                href={processedResult.images[0].url}
+                href={processedResult.image.url}
                 download="magical-selfie.jpg"
                 className="block bg-black text-white py-3 px-6 rounded-full font-medium hover:bg-gray-800 transition-colors duration-200"
               >
