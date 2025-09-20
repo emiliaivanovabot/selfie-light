@@ -211,7 +211,7 @@ export default function Home() {
         )}
 
         {/* Results Section */}
-        {processedResult && (
+        {processedResult && processedResult.image && processedResult.image.url && (
           <div className="text-center">
             <div className="inline-block rounded-xl overflow-hidden shadow-xl mb-6">
               <Image
