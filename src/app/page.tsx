@@ -73,6 +73,12 @@ export default function Home() {
     setError(null);
 
     try {
+      console.log("Starting image processing...");
+
+      // Add timeout protection (30 seconds to match Vercel function timeout)
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
+
       const response = await fetch("/api/process", {
         method: "POST",
         headers: {
@@ -83,17 +89,40 @@ export default function Home() {
           referenceUrl: FIXED_REFERENCE_IMAGE,
           prompt: "Using two reference photos (person A, person B), create a selfie style image where both are smiling and standing close together. Lighting: soft golden hour sunlight, warm tones. Background: beach at sunset with gentle waves. Both are looking at the camera. Maintain facial features, skin tone, hairstyle from the reference photos. High detail, photorealistic, slight depth of field, vertical format (9:16).",
         }),
+        signal: controller.signal,
       });
 
+      clearTimeout(timeoutId);
+
+      console.log("Response status:", response.status);
+
       const data = await response.json();
+      console.log("Response data:", data);
 
       if (!response.ok) {
-        throw new Error(data.error || "Processing failed");
+        throw new Error(data.error || `Processing failed with status ${response.status}`);
       }
 
+      // Validate the response structure
+      if (!data.result || !data.result.image || !data.result.image.url) {
+        console.error("Invalid response structure:", data);
+        throw new Error("Invalid response format from server");
+      }
+
+      console.log("Setting processed result:", data.result);
       setProcessedResult(data.result);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Processing failed");
+      console.error("Processing error:", err);
+
+      if (err instanceof Error) {
+        if (err.name === 'AbortError') {
+          setError("Processing timed out. Please try again.");
+        } else {
+          setError(err.message);
+        }
+      } else {
+        setError("Processing failed. Please try again.");
+      }
     } finally {
       setIsProcessing(false);
     }
