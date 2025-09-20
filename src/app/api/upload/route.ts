@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile } from "fs/promises";
-import { join } from "path";
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,39 +26,35 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "File type not allowed. Please upload JPG, PNG, or WebP images." }, { status: 400 });
     }
 
+    // Convert file to arrayBuffer and then to base64
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Create unique filename
+    // Create unique filename for reference (though we won't store the file)
     const timestamp = Date.now();
     const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
     const filename = `selfie-${timestamp}-${sanitizedName}`;
 
-    // CRITICAL: Vercel serverless functions can ONLY write to /tmp directory
-    const uploadDir = process.env.UPLOAD_DIR || "/tmp";
-    const filePath = join(uploadDir, filename);
-
-    // Create uploads directory if it doesn't exist (for /tmp)
-    const { mkdir } = await import("fs/promises");
-    try {
-      await mkdir(uploadDir, { recursive: true });
-    } catch {
-      // Directory might already exist
-    }
-
-    await writeFile(filePath, buffer);
-
-    // For Vercel, we need to return a data URL since files in /tmp are not publicly accessible
+    // CRITICAL: For Vercel production, we NEVER write files to disk
+    // Instead, convert directly to base64 data URL for immediate use
     const base64Data = buffer.toString('base64');
     const dataUrl = `data:${file.type};base64,${base64Data}`;
+
+    console.log("Upload successful:", {
+      filename,
+      size: file.size,
+      type: file.type,
+      isDataUrl: dataUrl.startsWith('data:'),
+      dataUrlLength: dataUrl.length
+    });
 
     return NextResponse.json({
       message: "File uploaded successfully",
       url: dataUrl,
       filename: filename,
-      filePath: filePath,
       size: file.size,
-      type: file.type
+      type: file.type,
+      isBase64: true
     });
 
   } catch (error) {

@@ -2,7 +2,7 @@ import * as fal from "@fal-ai/serverless-client";
 
 // Configure FAL client
 fal.config({
-  credentials: process.env.FAL_KEY,
+  credentials: process.env.FAL_KEY || process.env.FAL_API_KEY,
 });
 
 export interface EditRequest {

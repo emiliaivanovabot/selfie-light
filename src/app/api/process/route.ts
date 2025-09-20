@@ -13,8 +13,15 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // Helper function to convert local file to base64
-    const convertToBase64 = async (imageUrl: string) => {
+    // Helper function to handle both base64 data URLs and local file paths
+    const processImageUrl = async (imageUrl: string): Promise<string> => {
+      // If it's already a base64 data URL, return as-is
+      if (imageUrl.startsWith('data:')) {
+        console.log("Using base64 data URL directly");
+        return imageUrl;
+      }
+
+      // If it's a local file path, convert to base64
       const filePath = join(process.cwd(), "public", imageUrl);
 
       try {
@@ -26,6 +33,7 @@ export async function POST(request: NextRequest) {
         else if (extension === "webp") mimeType = "image/webp";
 
         const base64String = fileBuffer.toString('base64');
+        console.log(`Converted local file ${imageUrl} to base64`);
         return `data:${mimeType};base64,${base64String}`;
       } catch (fileError) {
         console.error("File read error for", imageUrl, ":", fileError);
@@ -33,13 +41,15 @@ export async function POST(request: NextRequest) {
       }
     };
 
-    // Convert both images to base64
-    const selfieDataUrl = await convertToBase64(selfieUrl);
-    const referenceDataUrl = await convertToBase64(referenceUrl);
+    // Process both images (handle both base64 and file paths)
+    const selfieDataUrl = await processImageUrl(selfieUrl);
+    const referenceDataUrl = await processImageUrl(referenceUrl);
 
     console.log("Processing with FAL.ai:", {
-      selfieUrl: "base64 data URL (selfie)",
-      referenceUrl: "base64 data URL (reference)",
+      selfieType: selfieUrl.startsWith('data:') ? "base64 data URL" : "local file converted to base64",
+      referenceType: referenceUrl.startsWith('data:') ? "base64 data URL" : "local file converted to base64",
+      selfieDataLength: selfieDataUrl.length,
+      referenceDataLength: referenceDataUrl.length,
       prompt: prompt || "Using two reference photos (person A, person B), create a selfie style image where both are smiling and standing close together. Lighting: soft golden hour sunlight, warm tones. Background: beach at sunset with gentle waves. Both are looking at the camera. Maintain facial features, skin tone, hairstyle from the reference photos. High detail, photorealistic, slight depth of field, vertical format (9:16)."
     });
 
