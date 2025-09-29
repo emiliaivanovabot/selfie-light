@@ -27,6 +27,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "File type not allowed. Please upload JPG, PNG, or WebP images." }, { status: 400 });
     }
 
+    // Check if BLOB_READ_WRITE_TOKEN exists
+    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+      console.error("BLOB_READ_WRITE_TOKEN not configured");
+      return NextResponse.json({
+        error: "Server configuration error",
+        details: "Blob storage not configured"
+      }, { status: 500 });
+    }
+
     // Convert file to arrayBuffer for Vercel Blob upload
     const bytes = await file.arrayBuffer();
 
@@ -35,10 +44,18 @@ export async function POST(request: NextRequest) {
     const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
     const filename = `selfie-${timestamp}-${sanitizedName}`;
 
-    // Upload to Vercel Blob Storage
+    console.log("Attempting upload:", {
+      filename,
+      size: file.size,
+      type: file.type,
+      hasToken: !!process.env.BLOB_READ_WRITE_TOKEN
+    });
+
+    // Upload to Vercel Blob Storage with explicit token
     const blob = await put(filename, bytes, {
       access: 'public',
       contentType: file.type,
+      token: process.env.BLOB_READ_WRITE_TOKEN,
     });
 
     console.log("Upload successful:", {
