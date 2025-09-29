@@ -1,0 +1,4 @@
+engine-strict=true
+registry=https://registry.npmjs.org/
+package-manager-strict=false
+prefer-package-manager=npm

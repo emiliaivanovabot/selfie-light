@@ -1,0 +1,6 @@
+KI-Integration
+	•	FAL.ai Nano Banana Edit API (fal-ai/nano-banana/edit)
+	•	Input: User-Foto + Emilia-Referenzbild + Text-Prompt
+	•	Output: 1024x1365 JPEG
+	•	Processing Time: 15-20 Sekunden
+	•	API Key: d3bb5586-0ace-4c0e-b1e9-4388acbb972c:6e7846f314d2cc594cb513d82b1f8b75

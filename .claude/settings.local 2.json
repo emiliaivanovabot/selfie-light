@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/bertanyalcintepe/.claude/**)",
+      "Bash(/Users/bertanyalcintepe/.claude/agent-delegation-tracker.sh delegate \"project-queen\" \"ux-team-leader\" \"Design selfie generation UI with photo upload, preview, and results display\")",
+      "Bash(textutil:*)",
+      "Bash(cat:*)",
+      "Bash(npx create-next-app:*)",
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(rm:*)",
+      "Bash(mv:*)",
+      "Bash(npm install:*)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill:*)",
+      "Bash(npm run dev:*)",
+      "Bash(pkill:*)",
+      "Bash(sudo rm:*)",
+      "Bash(curl:*)",
+      "WebSearch",
+      "Bash(bash:*)",
+      "WebFetch(domain:taskagent.vercel.app)",
+      "WebFetch(domain:taskagent.ai)",
+      "Bash(npx tsc:*)",
+      "Bash(kill:*)",
+      "Bash(git init:*)",
+      "Bash(git branch:*)",
+      "Bash(git commit:*)",
+      "Bash(gh repo create:*)",
+      "Bash(npm run build:*)",
+      "Bash(git add:*)",
+      "Bash(gh repo sync:*)",
+      "Bash(git push:*)",
+      "Bash(gh repo view:*)",
+      "Bash(npx vercel:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "functions": {
+    "src/app/api/upload/route.ts": {
+      "maxDuration": 30
+    },
+    "src/app/api/process/route.ts": {
+      "maxDuration": 60
+    }
+  },
+  "env": {
+    "FAL_KEY": "@fal_key",
+    "MAX_FILE_SIZE": "10485760",
+    "ALLOWED_MIME_TYPES": "image/jpeg,image/jpg,image/png,image/webp",
+    "UPLOAD_DIR": "/tmp",
+    "RATE_LIMIT_REQUESTS": "10",
+    "RATE_LIMIT_WINDOW": "3600000"
+  }
+}
