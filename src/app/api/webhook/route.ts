@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, imageUrl, action } = body;
+    const { email, imageUrl, action, successUrl } = body;
 
     if (!email || !imageUrl || !action) {
       return NextResponse.json(
@@ -19,6 +19,7 @@ export async function POST(request: NextRequest) {
       email,
       imageUrl,
       action,
+      successUrl,
       webhookUrl: N8N_WEBHOOK_URL
     });
 
@@ -27,6 +28,7 @@ export async function POST(request: NextRequest) {
       email,
       imageUrl, // This is now a Vercel Blob URL that Airtable can store
       action,
+      successUrl: successUrl || "",
       timestamp: new Date().toISOString(),
       hasImage: imageUrl ? "true" : "false",
     });
