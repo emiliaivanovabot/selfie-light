@@ -24,6 +24,7 @@ export default function SuccessPage() {
 
     // Verify payment and start countdown
     verifyPayment();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId]);
 
   const verifyPayment = async () => {
@@ -33,7 +34,7 @@ export default function SuccessPage() {
         setVerifying(false);
         startCountdown();
       }, 1000);
-    } catch (err) {
+    } catch {
       setError("Payment verification failed");
       setVerifying(false);
     }

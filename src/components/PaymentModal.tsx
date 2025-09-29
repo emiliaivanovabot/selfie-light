@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -71,10 +72,12 @@ export default function PaymentModal({
           {/* Preview Image */}
           <div className="mb-6 text-center">
             <div className="inline-block rounded-xl overflow-hidden shadow-lg mb-3">
-              <img
+              <Image
                 src={uploadedImageUrl}
                 alt="Dein Selfie"
-                className="w-32 h-32 object-cover"
+                width={128}
+                height={128}
+                className="object-cover"
               />
             </div>
             <p className="text-sm text-gray-600">Dein hochgeladenes Selfie</p>

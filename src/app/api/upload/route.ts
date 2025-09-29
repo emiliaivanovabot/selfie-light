@@ -45,8 +45,7 @@ export async function POST(request: NextRequest) {
       filename,
       size: file.size,
       type: file.type,
-      url: blob.url,
-      blobSize: blob.size
+      url: blob.url
     });
 
     return NextResponse.json({
