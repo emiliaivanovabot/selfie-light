@@ -12,7 +12,7 @@ export default function SuccessPage() {
   const email = searchParams.get('email');
   const imageUrl = searchParams.get('image');
 
-  const [countdown, setCountdown] = useState(10);
+  const [countdown, setCountdown] = useState(30);
   const [verifying, setVerifying] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
