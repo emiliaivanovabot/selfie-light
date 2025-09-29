@@ -95,7 +95,7 @@ export default function Home() {
           email,
           imageUrl: uploadedSelfieUrl,
           action: "check_payment_and_process",
-          successUrl: `${process.env.NEXT_PUBLIC_BASE_URL || window.location.origin}/success?email=${encodeURIComponent(email)}&image=${encodeURIComponent(uploadedSelfieUrl)}`
+          successUrl: `${window.location.origin}/success?email=${encodeURIComponent(email)}&image=${encodeURIComponent(uploadedSelfieUrl)}`
         }),
       });
 
