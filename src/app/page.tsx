@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState } from "react";
 import Image from "next/image";
 import PaymentModal from "../components/PaymentModal";
 
@@ -14,14 +13,9 @@ interface ProcessingResult {
 }
 
 export default function Home() {
-  const searchParams = useSearchParams();
-
   const [selectedSelfieFile, setSelectedSelfieFile] = useState<File | null>(null);
   const [uploadedSelfieUrl, setUploadedSelfieUrl] = useState<string | null>(null);
   const [isUploadingSelfie, setIsUploadingSelfie] = useState(false);
-
-  // Fixed reference image
-  const FIXED_REFERENCE_IMAGE = "/reference-woman.jpg";
   const [isProcessing, setIsProcessing] = useState(false);
   const [processedResult, setProcessedResult] = useState<ProcessingResult | null>(null);
   const [error, setError] = useState<string | null>(null);

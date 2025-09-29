@@ -62,6 +62,7 @@ export default function ResultsPage() {
 
     // Starte Bildgenerierung
     startImageGeneration();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [email, imageUrl]);
 
   // Progress Timer - 15 Sekunden pro Bild
