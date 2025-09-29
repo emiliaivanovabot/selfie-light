@@ -38,8 +38,12 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    console.log("N8N Response Status:", n8nResponse.status, n8nResponse.statusText);
+
     if (!n8nResponse.ok) {
+      const errorText = await n8nResponse.text();
       console.error("N8N webhook failed:", n8nResponse.status, n8nResponse.statusText);
+      console.error("N8N Error Body:", errorText);
 
       // If 404, the test webhook is not active - provide a mock response for testing
       if (n8nResponse.status === 404) {
@@ -56,13 +60,27 @@ export async function POST(request: NextRequest) {
       }
 
       return NextResponse.json(
-        { error: "Webhook processing failed" },
+        { error: "Webhook processing failed", details: errorText },
         { status: 500 }
       );
     }
 
-    const n8nData = await n8nResponse.json();
-    console.log("N8N response:", n8nData);
+    const responseText = await n8nResponse.text();
+    console.log("N8N Raw Response:", responseText);
+
+    let n8nData;
+    try {
+      n8nData = JSON.parse(responseText);
+    } catch (parseError) {
+      console.error("Failed to parse N8N response as JSON:", parseError);
+      console.error("Response was:", responseText);
+      return NextResponse.json(
+        { error: "Invalid webhook response format" },
+        { status: 500 }
+      );
+    }
+
+    console.log("N8N Parsed Data:", n8nData);
 
     // Expected N8N response format:
     // {
